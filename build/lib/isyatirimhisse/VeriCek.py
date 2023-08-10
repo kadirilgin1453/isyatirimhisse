@@ -41,10 +41,10 @@ def veri_cek(sembol=None, baslangic_tarih=None, bitis_tarih=None, frekans='1g', 
     liste = []
 
     for s in sembol:
-        url = f"https://www.isyatirim.com.tr/_layouts/15/Isyatirim.Website/Common/Data.aspx/HisseTekil?"
+        url = "https://www.isyatirim.com.tr/_layouts/15/Isyatirim.Website/Common/Data.aspx/HisseTekil?"
         url += f"hisse={s}&startdate={baslangic_tarih}&enddate={bitis_tarih}&frequency={frekans}.json"
         res = requests.get(url)
-        if not res.status_code == 200:
+        if res.status_code != 200:
             raise ConnectionError("Gönderdiğiniz istek İş Yatırım tarafından reddedildi.")
         result = res.json()
         historical = (

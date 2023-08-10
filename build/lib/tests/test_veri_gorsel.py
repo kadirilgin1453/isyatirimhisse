@@ -63,7 +63,7 @@ def test_veri_gorsel_with_kwargs():
 
     # Check for captured warnings
     relevant_warnings = [warning for warning in caught_warnings if issubclass(warning.category, UserWarning)]
-    assert len(relevant_warnings) >= 1, "A UserWarning should have been captured."
+    assert relevant_warnings, "A UserWarning should have been captured."
 
 if __name__ == "__main__":
     pytest.main()

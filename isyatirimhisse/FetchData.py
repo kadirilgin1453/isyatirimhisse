@@ -15,18 +15,10 @@ from bs4 import BeautifulSoup
 
 def date_conversion_decorator(func):
     def wrapper(symbol=None, start_period=None, end_period=None, save_to_excel=False, language='en'):
-        if start_period:
-            start_date = datetime.strptime(start_period, '%Y/%m')
-        else:
-            start_date = None
-        
-        if end_period:
-            end_date = datetime.strptime(end_period, '%Y/%m')
-        else:
-            end_date = None
-        
+        start_date = datetime.strptime(start_period, '%Y/%m') if start_period else None
+        end_date = datetime.strptime(end_period, '%Y/%m') if end_period else None
         return func(symbol, start_date, end_date, save_to_excel, language)
-    
+
     return wrapper
 
 
@@ -83,10 +75,10 @@ def fetch_data(symbol=None, start_date=None, end_date=None, frequency='1d', obse
     data_list = []
 
     for s in symbol:
-        url = f"https://www.isyatirim.com.tr/_layouts/15/Isyatirim.Website/Common/Data.aspx/HisseTekil?"
+        url = "https://www.isyatirim.com.tr/_layouts/15/Isyatirim.Website/Common/Data.aspx/HisseTekil?"
         url += f"hisse={s}&startdate={start_date}&enddate={end_date}.json"
         res = requests.get(url)
-        if not res.status_code == 200:
+        if res.status_code != 200:
             raise ConnectionError(error_messages[language]['response'])
         result = res.json()
         if result['value']:
@@ -218,7 +210,7 @@ def fetch_financials(symbol=None, start_period=None, end_period=None, save_to_ex
         symbol = [symbol]
 
     data_dict = {}
-    
+
     desired_dates = []
 
     while start_period <= end_period:
@@ -232,7 +224,7 @@ def fetch_financials(symbol=None, start_period=None, end_period=None, save_to_ex
             EC.element_to_be_clickable((By.XPATH, "//a[contains(text(), 'Mali Tablolar')]"))
         )
         financial_statements_tab.click()
-        
+
         first_select_box = WebDriverWait(driver, 10).until(
             EC.visibility_of_element_located((By.XPATH, "//span[@id='select2-ddlMaliTabloDonem1-container']"))
         )
@@ -245,7 +237,12 @@ def fetch_financials(symbol=None, start_period=None, end_period=None, save_to_ex
 
         for date in desired_dates_str:
             select_box = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, f"//span[@id='select2-ddlMaliTabloDonem1-container']"))
+                EC.element_to_be_clickable(
+                    (
+                        By.XPATH,
+                        "//span[@id='select2-ddlMaliTabloDonem1-container']",
+                    )
+                )
             )
             driver.execute_script("arguments[0].scrollIntoView();", select_box)
             select_box.click()
@@ -257,9 +254,9 @@ def fetch_financials(symbol=None, start_period=None, end_period=None, save_to_ex
             page_source = driver.page_source
 
             soup = BeautifulSoup(page_source, 'html.parser')
-            table = soup.select_one('table.excelexport[data-csvname="malitablo"]')
-
-            if table:
+            if table := soup.select_one(
+                'table.excelexport[data-csvname="malitablo"]'
+            ):
                 rows = table.find_all('tr')
                 if len(rows) > 1:
                     data = []
