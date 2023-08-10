@@ -59,10 +59,9 @@ def veri_gorsel(df=None, gorsel_turu='1', normalizasyon=False, **kwargs):
                 label=column,
                 linewidth=kwargs.get('linewidth', 1.5)
             )
-        plt.title("Hisse Senetleri, {}/{}/{} - {}/{}/{}".format(
-            df.index.min().strftime('%d'), df.index.min().strftime('%m'), df.index.min().strftime('%Y'),
-            df.index.max().strftime('%d'), df.index.max().strftime('%m'), df.index.max().strftime('%Y')
-        ))
+        plt.title(
+            f"Hisse Senetleri, {df.index.min().strftime('%d')}/{df.index.min().strftime('%m')}/{df.index.min().strftime('%Y')} - {df.index.max().strftime('%d')}/{df.index.max().strftime('%m')}/{df.index.max().strftime('%Y')}"
+        )
         plt.xlabel('')
         plt.ylabel('')
         plt.legend(fontsize='small')
